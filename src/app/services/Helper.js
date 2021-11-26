@@ -28,11 +28,11 @@ module.exports = {
     return value;
   },
 
-  imageFilter (req, file, cb) {
+  imageFilter(req, file, cb) {
     // Accept images only
     if (!file.originalname.match(/\.(png|PNG)$/)) {
-        req.fileValidationError = 'Only image files are allowed!';
-        return cb(new Error('Only image files are allowed!'), false);
+      req.fileValidationError = 'Only image files are allowed!';
+      return cb(new Error('Only image files are allowed!'), false);
     }
     cb(null, true);
   },
@@ -225,7 +225,12 @@ module.exports = {
   },
 
   isEmail(mail) {
-    if (/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(mail)) return true;
+    if (
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+        mail
+      )
+    )
+      return true;
 
     return false;
   },

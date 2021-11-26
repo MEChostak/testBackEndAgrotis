@@ -8,6 +8,8 @@ import fileUpload from 'express-fileupload';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import morgan from 'morgan';
+
+
 const _ = require('lodash');
 
 import 'express-async-errors';
@@ -22,16 +24,17 @@ class App {
   constructor() {
     this.server = express();
 
-    // Sentry.init({
-    //   dsn: "https://c5246b46c60a423b874e75bf97444c0e@o466860.ingest.sentry.io/5559969",
-    //   tracesSampleRate: 0.5,
-    // });
+    /*Sentry.init({
+      dsn: "https://c5246b46c60a423b874e75bf97444c0e@o466860.ingest.sentry.io/5559969",
+      tracesSampleRate: 0.5,
+    });*/
 
     this.middlewares();
     this.routes();
     this.exceptionHandler();
+    // this.service();
   }
-
+  
   middlewares() {
     this.server.use(Sentry.Handlers.requestHandler());
     this.server.use(fileUpload({createParentPath: true}));
@@ -42,17 +45,22 @@ class App {
     this.server.use(express.static(__dirname + '/public'));
   }
 
+  // service () {
+  //   setInterval(() => {
+  //     BulkStore();
+  //   }, 30000);
+  // }
+
   routes() {
     this.server.use(routes);
   }
 
   exceptionHandler() {
-    this.server.use(Sentry.Handlers.errorHandler());
+    // this.server.use(Sentry.Handlers.errorHandler());
 
     this.server.use(async (err, req, res, next) => {
       if (process.env.NODE_ENV === 'development') {
         const errors = await new Youch(err, req).toJSON();
-
         return res.status(500).json(errors);
       } 
 

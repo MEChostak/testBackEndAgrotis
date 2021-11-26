@@ -2,46 +2,30 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('User', {
+    return queryInterface.createTable('Organization', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
-        primaryKey: true  
+        primaryKey: true
       },
-      // organizationId: {
-      //   type: Sequelize.INTEGER,
-      //   allowNull: false,
-      //   // onDelete: 'CASCADE',
-      //   // References: {
-      //   //   model: 'Profile',
-      //   //   key: 'profileId', 
-      //   //   as: 'profile'
-      //   // }
-      // },
-      profileId: {
+      planId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-        // onDelete: 'CASCADE',
-        // References: {
-        //   model: 'Organization',
-        //   key: 'organizationId', 
-        //   as: 'organization'
-        // }
+        allowNull: false
       },
       name: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      password: {
+      description: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      paymentStatus: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      mail: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      isOwner: {
+      userTest: {
         type: Sequelize.STRING,
         allowNull: true,
         defaultValue: 'Yes'
@@ -59,6 +43,6 @@ module.exports = {
     })
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('User');
+    return queryInterface.dropTable('Organization');
   }
 };

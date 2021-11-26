@@ -5,9 +5,9 @@ module.exports = {
   dialect: 'mysql',
   host: process.env.DB_HOST,
   port: 3306,
-  username: 'root',
-  password: 'senha',
-  database: 'smart_aviation',
+  username: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
   /*schema: process.env.DB_SCHEMA,*/
   dialectOptions: {
     dateStrings: true,
@@ -25,6 +25,5 @@ module.exports = {
   ],
   define: {
     timestamps: true,
-    freezeTableName: true
   },
 };

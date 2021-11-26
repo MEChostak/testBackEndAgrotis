@@ -1,6 +1,6 @@
 import User from '../models/User';
 
-// import Organization from '../models/Organization';
+import Organization from '../models/Organization';
 
 import ValidatorUser from '../services/ValidatorUser';
 
@@ -17,9 +17,9 @@ module.exports = {
             name: req.body.name,
             password: req.body.password,
             mail: req.body.mail,
-            // profileId: req.body.profileId,
-            // organizationId: req.body.organizationId,
-            // organization: []
+            profileId: req.body.profileId,
+            organizationId: req.body.organizationId,
+            organization: []
         }
 
         // Valida o objeto
