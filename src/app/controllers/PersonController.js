@@ -1,12 +1,14 @@
-import Plan from '../models/Plan';
+import Person from '../models/Person';
 
-import Organization from '../models/Organization';
+// import Organization from '../models/Organization';
+
+import ValidatorPerson from '../services/ValidatorPerson';
 
 const Sequelize = require('sequelize');
 
-const Op = Sequelize.Op;
+const jwt = require('jsonwebtoken')
 
-import ValidatorPlan from '../services/ValidatorPlan';
+const Op = Sequelize.Op;
 
 module.exports = {
 
@@ -14,12 +16,13 @@ module.exports = {
         const obj = {
             name: req.body.name,
             description: req.body.description,
-            price: req.body.price,
-            timeCourse: req.body.timeCourse
+            birthDate: req.body.birthDate,
+            phone: req.body.phone,
+            mail: req.body.mail
         }
 
         // Valida o objeto
-        const errorDetails = await ValidatorPlan.Plan(obj);
+        const errorDetails = await ValidatorPerson.person(obj);
 
         if (errorDetails != 0) {
             return res.status(400).json({
@@ -29,62 +32,57 @@ module.exports = {
             });
         }
 
-        // Verifica se o plan já está existe
-        const register = await Plan.findAll({
+        // Verifica se o person já está existe
+        const register = await Person.findAll({
             limit: 1,
             where: {
-                name: obj.name,
-                price: obj.price
+                name: obj.name
             }
         });
-
         if (register.length > 0) {
             return res.status(400).json({
                 timestamp: Date.now(),
-                error: "Plan already registered.",
+                error: "User already registered.",
                 fields: [
                     obj.name,
-                    obj.price
                 ]
             });
         }
 
-        // Cria o plano
-        let plan = await Plan.create(
-            obj/* , {
-                include: [
-                    { association: 'organization' }
-                ]
-            } */
-        );
+        // cria person 
+        person = await Person.create(obj);
 
-        if (!plan) {
+
+        if (!person) {
             return res.status(400).json({
                 timestamp: Date.now(),
                 ok: false,
-                message: "Fail to create Plan!"
+                message: "Fail to create Person!",
             });
         } else {
             return res.status(200).json({
                 timestamp: Date.now(),
                 ok: true,
-                message: "Plan created!"
+                message: "Person created!",
+                data: person
             });
         }
     },
 
     async update(req, res) {
 
-        const { planId } = req.params;
+        const { personId } = req.params;
 
         const obj = {
             name: req.body.name,
             description: req.body.description,
-            price: req.body.price
+            birthDate: req.body.birthDate,
+            phone: req.body.phone,
+            mail: req.body.mail
         }
 
         // Valida o objeto
-        const errorDetails = await ValidatorPlan.Plan(obj);
+        const errorDetails = await ValidatorPerson.person(obj);
 
         if (errorDetails != 0) {
             return res.status(400).json({
@@ -94,21 +92,20 @@ module.exports = {
             });
         }
 
-
-        // Verifica se o plano existe
-        let plan = await Plan.findByPk(
-            planId,
+        // Verifica se o person existe
+        let person = await Person.findByPk(
+            personId
         );
-        if (!plan) {
+        if (!person) {
             return res.status(400).json({
                 timestamp: Date.now(),
                 ok: false,
-                message: "Plan not found!"
+                message: "Person not found!"
             });
         }
 
-        // Altera o plano
-        Plan.update(obj, { where: { id: planId } })
+        // Altera o person
+        Person.update(obj, { where: { id: personId } })
             .then((result) => {
 
                 console.log(result);
@@ -116,7 +113,7 @@ module.exports = {
                 return res.status(200).json({
                     timestamp: Date.now(),
                     ok: true,
-                    message: "Updated plan!"
+                    message: "Person updated!"
                 });
 
             }).catch((err) => {
@@ -126,34 +123,27 @@ module.exports = {
                 return res.status(400).json({
                     timestamp: Date.now(),
                     ok: false,
-                    message: "Fail to update plan!"
+                    message: "Failed to update person!"
                 });
             });
-
     },
 
     async show(req, res) {
 
-        const planId = req.params.planId;
+        const personId = req.params.personId;
 
-        // Pesquisa pelo Id
-        Plan.findByPk(
-            planId,
-            // inclui na pesquisa todos os itens relacionados
-            {
-                include: [
-                    { association: 'organization' }
-                ]
-            }
-        ).then(plan => {
+        // Pesquisar person
+        Person.findByPk(
+            personId
+        ).then(person => {
 
-            console.log(plan);
+            console.log(person);
 
-            if (!plan) {
+            if (!person) {
                 return res.status(400).json({
                     timestamp: Date.now(),
                     ok: false,
-                    message: "Plan not found!"
+                    message: "Person not found!"
                 });
             }
 
@@ -161,7 +151,7 @@ module.exports = {
                 timestamp: Date.now(),
                 ok: true,
                 message: "",
-                data: plan
+                data: person
             });
 
         }).catch(err => {
@@ -170,24 +160,23 @@ module.exports = {
             return res.status(400).json({
                 timestamp: Date.now(),
                 ok: false,
-                message: "Failed to find plan!"
+                message: "Failed to find person!"
             });
         })
-
     },
 
     async list(req, res) {
+
         const page = req.params.page;
 
         const obj = {
             name: req.body.name,
             description: req.body.description,
-            price: req.body.price,
-            timeCourse: req.body.timeCourse,
-            country: req.body.country,
-            city: req.body.city,
-            state: req.body.state,
+            birthDate: req.body.birthDate,
+            phone: req.body.phone,
+            mail: req.body.mail
         }
+
         const Op = Sequelize.Op;
         var whereClause = new Object();
 
@@ -196,43 +185,14 @@ module.exports = {
                 [Op.like]: '%' + obj.name + '%'
             }
         }
-        if (obj.description) {
-            whereClause.description = {
-                [Op.like]: '%' + obj.description + '%'
-            }
-        }
-        if (obj.price) {
-            whereClause.price = obj.price
-        }
-        if (obj.timeCourse) {
-            whereClause.timeCourse = obj.timeCourse
-        }
-        if (obj.organizationId) {
-            whereClause.organizationId = obj.organizationId
-        }
 
-        if (obj.country) {
-            whereClause.country = {
-                [Op.like]: '%' + obj.country + '%'
-            }
-        }
-
-        if (obj.city) {
-            whereClause.city = {
-                [Op.like]: '%' + obj.city + '%'
-            }
-        }
-
-        if (obj.state) {
-            whereClause.state = {
-                [Op.like]: '%' + obj.state + '%'
-            }
-        }
         console.log(obj)
+        console.log("console log aqui", process.env.PER_PAGE)
 
-        Plan.findAndCountAll({
+        Person.findAndCountAll({
             where: whereClause,
             // include: [
+            //     { association: 'profile' },
             //     { association: 'organization' },
             // ],
             limit: parseInt(process.env.PER_PAGE),
@@ -240,16 +200,16 @@ module.exports = {
             order: [
                 ['id', 'DESC']
             ]
-        }).then(plan => {
+        }).then(person => {
             let response = {
                 timestamp: Date.now(),
                 ok: true,
                 info: {
-                    totalRows: plan.count,
-                    totalPages: Math.ceil(plan.count / parseInt(process.env.PER_PAGE)),
+                    totalRows: person.count,
+                    totalPages: Math.ceil(person.count / parseInt(process.env.PER_PAGE)),
                     page: page
                 },
-                elements: plan.rows
+                elements: person.rows
             }
 
             return res.status(200).json(response);
@@ -260,49 +220,48 @@ module.exports = {
             return res.status(400).json({
                 timestamp: Date.now(),
                 ok: false,
-                message: "Failed to list plan!"
+                message: "Failed to list person!"
             });
         });
 
     },
 
     async delete(req, res) {
+        const { personId } = req.params;
 
-        const { planId } = req.params;
-
-        // Verifica se o plano existe
-        let plan = await Plan.findByPk(
-            planId
+        // Verifica se o person existe
+        let person = await Person.findByPk(
+            personId
         );
 
-        if (!plan) {
+        if (!person) {
             return res.status(400).json({
                 timestamp: Date.now(),
                 ok: false,
-                message: "Plan not found!"
+                message: "Person not found!"
             });
         }
 
-        // Deleta o plan
-        Plan.destroy({ where: { id: planId } })
+        // Deleta o person
+        Person.destroy({ where: { id: personId } })
             .then((result) => {
-
-                console.log(result);
-
-                return res.status(200).json({
-                    timestamp: Date.now(),
-                    ok: true,
-                    message: "Deleted plan!"
-                });
-
-            }).catch((err) => {
 
                 console.log(result);
 
                 return res.status(400).json({
                     timestamp: Date.now(),
                     ok: false,
-                    message: "Fail to delete plan!"
+                    message: "Person deleted!"
+                });
+
+            }).catch((err) => {
+
+                console.log(err);
+
+                return res.status(400).json({
+                    timestamp: Date.now(),
+                    ok: false,
+                    message: "Failed to delete person!"
                 });
             });
     },

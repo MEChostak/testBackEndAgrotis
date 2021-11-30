@@ -17,7 +17,7 @@ module.exports = {
             name: req.body.name,
             password: req.body.password,
             mail: req.body.mail,
-            profileId: req.body.profileId,
+            personId: req.body.personId,
             organizationId: req.body.organizationId,
             organization: []
         }
@@ -90,7 +90,7 @@ module.exports = {
             name: req.body.name,
             password: req.body.password,
             mail: req.body.mail,
-            profileId: req.body.profileId,
+            personId: req.body.personId,
             organizationId: req.body.organizationId
         }
 
@@ -206,7 +206,7 @@ module.exports = {
             mail: req.body.mail,
             organizationId: req.body.organizationId,
             status: req.body.status,
-            profile: req.body.profile,
+            personId: req.body.personId,
         }
 
         const Op = Sequelize.Op;
@@ -227,10 +227,10 @@ module.exports = {
 
         User.findAndCountAll({
             where: whereClause,
-            include: [
+            /* include: [
                 { association: 'profile' },
                 { association: 'organization' },
-            ],
+            ], */
             limit: parseInt(process.env.PER_PAGE),
             offset: (page - 1) * parseInt(process.env.PER_PAGE),
             order: [

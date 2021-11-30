@@ -1,12 +1,12 @@
 const { Model, DataTypes } = require('sequelize');
 
-class User extends Model {
+class Table extends Model {
   static init(sequelize) {
     super.init(
       {
-        name: DataTypes.STRING,
-        password: DataTypes.STRING,
-        mail: DataTypes.STRING,
+        mouth: DataTypes.STRING,
+        year: DataTypes.STRING,
+        value: DataTypes.STRING,
       },
       {
         sequelize,
@@ -15,13 +15,13 @@ class User extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.Person, {
-      foreignKey: 'personId', as: 'person'
+    /* this.belongsTo(models.Profile, {
+      foreignKey: 'profileId', as: 'profile'
     });
     this.belongsTo(models.Organization, {
       foreignKey: 'organizationId', as: 'organization'
-    });
+    }); */
   }
 }
 
-module.exports = User;
+module.exports = Table;

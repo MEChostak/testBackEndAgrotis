@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Profile', {
+    return queryInterface.createTable('Person', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -14,6 +14,18 @@ module.exports = {
         allowNull: false
       },
       description: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      birthDate: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      phone: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      email: {
         type: Sequelize.STRING,
         allowNull: false
       },
@@ -30,6 +42,6 @@ module.exports = {
     })
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Profile');
+    return queryInterface.dropTable('Person');
   }
 };

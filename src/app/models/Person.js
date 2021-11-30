@@ -1,11 +1,14 @@
 const { Model, DataTypes } = require('sequelize');
 
-class Profile extends Model {
+class Person extends Model {
   static init(sequelize) {
     super.init(
       {
         name: DataTypes.STRING,
         description: DataTypes.STRING,
+        birthDate: DataTypes.STRING,
+        phone: DataTypes.STRING,
+        mail: DataTypes.STRING
       },
       {
         sequelize,
@@ -14,8 +17,8 @@ class Profile extends Model {
   }
 
   static associate(models) {
-    this.hasMany(models.User, {onDelete: 'cascade', hooks:true, foreignKey: 'profileId', as: 'user'});
+    this.hasMany(models.User, {onDelete: 'cascade', hooks:true, foreignKey: 'personId', as: 'user'});
   }
 }
 
-module.exports = Profile;
+module.exports = Person;

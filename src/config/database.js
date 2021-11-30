@@ -25,5 +25,6 @@ module.exports = {
   ],
   define: {
     timestamps: true,
+    freezeTableName: true
   },
 };

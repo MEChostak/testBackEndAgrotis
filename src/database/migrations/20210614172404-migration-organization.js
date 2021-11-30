@@ -9,10 +9,10 @@ module.exports = {
         allowNull: false,
         primaryKey: true
       },
-      planId: {
+      /* planId: {
         type: Sequelize.INTEGER,
         allowNull: false
-      },
+      }, */
       name: {
         type: Sequelize.STRING,
         allowNull: false
