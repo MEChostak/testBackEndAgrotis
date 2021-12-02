@@ -161,12 +161,12 @@ module.exports = {
         User.findByPk(
             userId,
             // inclui na pesquisa todos os itens relacionados
-            {
-                include: [
-                    { association: 'profile' },
-                    { association: 'organization' },
-                ]
-            }
+            // {
+            //     include: [
+            //         { association: 'profile' },
+            //         { association: 'organization' },
+            //     ]
+            // }
         ).then(user => {
 
             console.log(user);
