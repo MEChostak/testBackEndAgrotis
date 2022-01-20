@@ -14,8 +14,8 @@ routes.post('/user/login', UserController.login);
 /** * USER  ** */
 routes.post('/user/list/:page', Auth.middleware, UserController.list);
 routes.get('/user/show/:userId', Auth.middleware, UserController.show);
-routes.post('/user/store', /* Auth.middleware, */ UserController.store);
-routes.patch('/user/update/:userId'/* , Auth.middleware */, UserController.update);
+routes.post('/user/store', Auth.middleware, UserController.store);
+routes.patch('/user/update/:userId' /* , Auth.middleware */ , UserController.update);
 routes.delete('/user/delete/:userId', Auth.middleware, UserController.delete);
 
 /** * ORGANIZATION ** */
@@ -29,7 +29,7 @@ routes.delete('/organization/delete/:organizationId', Auth.middleware, Organizat
 
 routes.post('/plan/list/:page', Auth.middleware, PlanController.list);
 routes.post('/plan/store', Auth.middleware, PlanController.store);
-routes.patch('/plan/update/:planId', Auth.middleware, PlanController.update);   
+routes.patch('/plan/update/:planId', Auth.middleware, PlanController.update);
 routes.get('/plan/show/:planId', Auth.middleware, PlanController.show);
 routes.delete('/plan/delete/:planId', Auth.middleware, PlanController.delete);
 
@@ -37,7 +37,7 @@ routes.delete('/plan/delete/:planId', Auth.middleware, PlanController.delete);
 
 routes.post('/person/list/:page', /* Auth.middleware, */ PersonController.list);
 routes.post('/person/store', /* Auth.middleware, */ PersonController.store);
-routes.patch('/person/update/:personId', /* Auth.middleware, */ PersonController.update);   
+routes.patch('/person/update/:personId', /* Auth.middleware, */ PersonController.update);
 routes.get('/person/show/:personId', /* Auth.middleware, */ PersonController.show);
 routes.delete('/person/delete/:personId', /* Auth.middleware, */ PersonController.delete);
 
@@ -45,7 +45,7 @@ routes.delete('/person/delete/:personId', /* Auth.middleware, */ PersonControlle
 
 routes.post('/table/list/:page', Auth.middleware, TableController.list);
 routes.post('/table/store', Auth.middleware, TableController.store);
-routes.patch('/table/update/:tableId', Auth.middleware, TableController.update);   
+routes.patch('/table/update/:tableId', Auth.middleware, TableController.update);
 routes.get('/table/show/:tableId', Auth.middleware, TableController.show);
 routes.delete('/table/delete/:tableId', Auth.middleware, TableController.delete);
 
