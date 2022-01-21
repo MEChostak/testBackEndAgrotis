@@ -6,6 +6,7 @@ import PersonController from './app/controllers/PersonController';
 import OrganizationController from './app/controllers/OrganizationController';
 import TableController from './app/controllers/TableController';
 import Auth from './app/middlewares/Auth';
+import PdfController from './app/controllers/PdfController';
 
 const routes = new Router();
 
@@ -48,5 +49,9 @@ routes.post('/table/store', Auth.middleware, TableController.store);
 routes.patch('/table/update/:tableId', Auth.middleware, TableController.update);
 routes.get('/table/show/:tableId', Auth.middleware, TableController.show);
 routes.delete('/table/delete/:tableId', Auth.middleware, TableController.delete);
+
+/** * PDF  ** */
+
+routes.post('/pdf/bulk', Auth.middleware, PdfController.bulk)
 
 export default routes;

@@ -8,6 +8,7 @@ import fileUpload from 'express-fileupload';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import morgan from 'morgan';
+import BulkStore from './app/services/BulkStore';
 
 
 const _ = require('lodash');
@@ -21,55 +22,55 @@ import routes from './routes';
 import './database';
 
 class App {
-  constructor() {
-    this.server = express();
+    constructor() {
+        this.server = express();
 
-    /*Sentry.init({
-      dsn: "https://c5246b46c60a423b874e75bf97444c0e@o466860.ingest.sentry.io/5559969",
-      tracesSampleRate: 0.5,
-    });*/
+        /*Sentry.init({
+          dsn: "https://c5246b46c60a423b874e75bf97444c0e@o466860.ingest.sentry.io/5559969",
+          tracesSampleRate: 0.5,
+        });*/
 
-    this.middlewares();
-    this.routes();
-    this.exceptionHandler();
-    // this.service();
-  }
-  
-  middlewares() {
-    this.server.use(Sentry.Handlers.requestHandler());
-    this.server.use(fileUpload({createParentPath: true}));
-    this.server.use(cors());
-    this.server.use(bodyParser.json());
-    this.server.use(bodyParser.urlencoded({extended: true}));
-    this.server.use(morgan('dev'));
-    this.server.use(express.static(__dirname + '/public'));
-  }
+        this.middlewares();
+        this.routes();
+        this.exceptionHandler();
+        // this.service();
+    }
 
-  // service () {
-  //   setInterval(() => {
-  //     BulkStore();
-  //   }, 30000);
-  // }
+    middlewares() {
+        this.server.use(Sentry.Handlers.requestHandler());
+        this.server.use(fileUpload({ createParentPath: true }));
+        this.server.use(cors());
+        this.server.use(bodyParser.json());
+        this.server.use(bodyParser.urlencoded({ extended: true }));
+        this.server.use(morgan('dev'));
+        this.server.use(express.static(__dirname + '/public'));
+    }
 
-  routes() {
-    this.server.use(routes);
-  }
+    service() {
+        setInterval(() => {
+            BulkStore();
+        }, 30000);
+    }
 
-  exceptionHandler() {
-    // this.server.use(Sentry.Handlers.errorHandler());
+    routes() {
+        this.server.use(routes);
+    }
 
-    this.server.use(async (err, req, res, next) => {
-      if (process.env.NODE_ENV === 'development') {
-        const errors = await new Youch(err, req).toJSON();
-        return res.status(500).json(errors);
-      } 
+    exceptionHandler() {
+        // this.server.use(Sentry.Handlers.errorHandler());
 
-      const errors = await new Youch(err, req).toJSON();
-      return res.status(500).json(errors);
-      
-      //return res.status(500).json({ error: 'Internal server error' });
-    });
-  }
+        this.server.use(async(err, req, res, next) => {
+            if (process.env.NODE_ENV === 'development') {
+                const errors = await new Youch(err, req).toJSON();
+                return res.status(500).json(errors);
+            }
+
+            const errors = await new Youch(err, req).toJSON();
+            return res.status(500).json(errors);
+
+            //return res.status(500).json({ error: 'Internal server error' });
+        });
+    }
 }
 
 export default new App().server;
