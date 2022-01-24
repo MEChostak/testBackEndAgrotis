@@ -6,6 +6,7 @@ const fs = require("fs");
 const Op = Sequelize.Op
 const formidable = require('formidable');
 const path = require('path')
+const csv = require("fast-csv");
 
 module.exports = {
     async bulk(req, res) {
