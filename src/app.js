@@ -8,7 +8,7 @@ import fileUpload from 'express-fileupload';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import morgan from 'morgan';
-import BulkStore from './app/services/BulkStore';
+import BulkStore from '../src/app/services/BulkStore';
 
 
 const _ = require('lodash');
@@ -33,7 +33,7 @@ class App {
         this.middlewares();
         this.routes();
         this.exceptionHandler();
-        // this.service();
+        this.service();
     }
 
     middlewares() {
@@ -49,7 +49,7 @@ class App {
     service() {
         setInterval(() => {
             BulkStore();
-        }, 30000);
+        }, 3000);
     }
 
     routes() {
