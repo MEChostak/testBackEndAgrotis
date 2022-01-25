@@ -6,15 +6,15 @@ const fs = require("fs");
 const Op = Sequelize.Op
 const formidable = require('formidable');
 const path = require('path')
-const csv = require("fast-csv");
+    // const pdf = require('pdf2json');
 
 module.exports = {
     async bulk(req, res) {
         let timeStamp = Date.now()
-            // let establishment = req.files.userpic.name
-        let fileName = `${timeStamp}.Pdf`
+        let document = req.files.doc.name
+        let fileName = `pdf_${document}_${timeStamp}.Pdf`
         let filePath = path.resolve(__dirname, '..', '..', 'public', fileName)
-        let file = req.files.data
+        let file = req.files.doc.data
 
         fs.writeFile(filePath, (err) => {
             if (err) {
@@ -32,6 +32,7 @@ module.exports = {
                 status: 'Pendente'
             })
             .then(result => {
+                console.log(result)
                 return res.status(200).json({
                     timestamp: Date.now(),
                     ok: true,
@@ -58,16 +59,16 @@ module.exports = {
                     ['id']
                 ]
             })
-            .then(product => {
+            .then(pdf => {
                 let response = {
                     timestamp: Date.now(),
                     ok: true,
                     info: {
-                        totalRows: product.count,
-                        totalPages: Math.ceil(product.count / parseInt(process.env.PER_PAGE)),
+                        totalRows: pdf.count,
+                        totalPages: Math.ceil(pdf.count / parseInt(process.env.PER_PAGE)),
                         page: page,
                     },
-                    files: product.rows
+                    files: pdf.rows
                 }
                 return res.status(200).json(response)
             })
@@ -76,7 +77,7 @@ module.exports = {
                 return res.status(400).json({
                     timestamp: Date.now(),
                     ok: false,
-                    message: "Failed to list product"
+                    message: "Failed to list pdf"
                 })
             })
     },
