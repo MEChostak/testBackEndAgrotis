@@ -11,12 +11,12 @@ const csv = require("fast-csv");
 module.exports = {
     async bulk(req, res) {
         let timeStamp = Date.now()
-        let establishment = req.files.userpic.name
-        let fileName = `products_${establishment}_${timeStamp}.Pdf`
+            // let establishment = req.files.userpic.name
+        let fileName = `${timeStamp}.Pdf`
         let filePath = path.resolve(__dirname, '..', '..', 'public', fileName)
-        let file = req.files.userpic.data
+        let file = req.files.data
 
-        fs.writeFile(filePath, file, (err) => {
+        fs.writeFile(filePath, (err) => {
             if (err) {
                 console.log(err)
                 return res.status(400).json({
