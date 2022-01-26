@@ -2457,6 +2457,13 @@
   dependencies:
     "ms" "2.0.0"
 
+"debug@^3.1.0":
+  "integrity" "sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ=="
+  "resolved" "https://registry.npmjs.org/debug/-/debug-3.2.7.tgz"
+  "version" "3.2.7"
+  dependencies:
+    "ms" "^2.1.1"
+
 "debug@^3.2.7":
   "integrity" "sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ=="
   "resolved" "https://registry.npmjs.org/debug/-/debug-3.2.7.tgz"
@@ -4593,6 +4600,11 @@
   "resolved" "https://registry.npmjs.org/nice-try/-/nice-try-1.0.5.tgz"
   "version" "1.0.5"
 
+"node-ensure@^0.0.0":
+  "integrity" "sha1-7K52QVDemYYexcgQ/V0Jaxg5Mqc="
+  "resolved" "https://registry.npmjs.org/node-ensure/-/node-ensure-0.0.0.tgz"
+  "version" "0.0.0"
+
 "node-releases@^2.0.1":
   "integrity" "sha512-CqyzN6z7Q6aMeF/ktcMVTzhAHCEpf8SOarwpzpf8pNBY2k5/oM34UHldUwp8VKI7uxct2HxSRdJjBaZeESzcxA=="
   "resolved" "https://registry.npmjs.org/node-releases/-/node-releases-2.0.1.tgz"
@@ -4911,6 +4923,14 @@
   "version" "3.0.0"
   dependencies:
     "pify" "^3.0.0"
+
+"pdf-parse@^1.0.8":
+  "integrity" "sha512-lrqjFxGapSSc/KYnWHNaUOXCa2apjPQopM+ulsZ6aEXSolz6wSHputkImULljDboh2Pt4XvjP86kySls/GrvcQ=="
+  "resolved" "https://registry.npmjs.org/pdf-parse/-/pdf-parse-1.0.8.tgz"
+  "version" "1.0.8"
+  dependencies:
+    "debug" "^3.1.0"
+    "node-ensure" "^0.0.0"
 
 "pdf2json@^2.0.0":
   "integrity" "sha512-+FZy7GSvLOLc+zksg0SoMvXqIqcku5lBlEPuYJJkhMWB2x6yfthzEhhSbZc20UheClMPagH/+NXnMRbvQMQR1w=="

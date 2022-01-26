@@ -12,11 +12,11 @@ module.exports = {
     async bulk(req, res) {
         let timeStamp = Date.now()
         let document = req.files.doc.name
-        let fileName = `pdf_${document}_${timeStamp}.Pdf`
+        let fileName = `${timeStamp}_${document}`
         let filePath = path.resolve(__dirname, '..', '..', 'public', fileName)
         let file = req.files.doc.data
 
-        fs.writeFile(filePath, (err) => {
+        fs.writeFile(filePath, file, (err) => {
             if (err) {
                 console.log(err)
                 return res.status(400).json({
@@ -43,9 +43,6 @@ module.exports = {
                 console.log(err)
                 return res.status(400)
             })
-
-
-
     },
 
     // Lista todos os arquivos Pdf
