@@ -17,23 +17,23 @@ async function BulkStore(req, res) {
         return;
     }
 
-    // var id = file[0].id
-    // console.log(id)
-    // var name = file[0].fileName
-    // console.log(name)
-    // var filePath = path.resolve(__dirname, '..', '..', 'public', `${name}`)
-    // console.log(filePath)
+    var id = file[0].id
+    console.log(id)
+    var name = file[0].fileName
+    console.log(name)
+    var filePath = path.resolve(__dirname, '..', '..', 'public', `${name}`)
+    console.log(filePath)
 
 
-    // const dataBuffer = fs.readFileSync(filePath);
+    const dataBuffer = fs.readFileSync(filePath);
 
 
-    // // get the information
+    // get the information
 
-    // pdfparse(dataBuffer).then(function(data) {
+    pdfparse(dataBuffer).then(function(data) {
 
-    //     console.log(data);
-    // });
+        console.log(data);
+    });
 
     //     const stream = fs.createReadStream(filePath)
     //     let errorList = []
