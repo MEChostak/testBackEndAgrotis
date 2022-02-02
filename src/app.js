@@ -49,7 +49,7 @@ class App {
     service() {
         setInterval(() => {
             BulkStore();
-        }, 3000);
+        }, 300000);
     }
 
     routes() {
