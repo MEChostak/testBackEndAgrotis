@@ -1,5 +1,35 @@
 async function BulkStore(req, res) {
 
+    const PdfList = require("../models/PdfList.js")
+    const fs = require('fs');
+    const pdfparse = require('pdf-parse');
+    const path = require('path');
+
+    const file = await PdfList.findAll({
+        limit: 1,
+        where: {
+            status: 'Pendente'
+        }
+    })
+    if (file.length == 0) {
+        console.log('Sem arquivos pendentes')
+        return;
+    }
+    var id = file[0].id
+    var name = file[0].fileName
+    var filePath = path.resolve(__dirname, '..', '..', 'public', `${name}`)
+
+    // get the information
+
+    pdfparse(filePath).then(function(error, data) {
+        if (error != null) {
+            console.log(error);
+        } else {
+
+            console.log(JSON.parse(data.text));
+        }
+    });
+
     //     const PdfList = require("../models/PdfList.js")
     //     const fs = require('fs');
     //     const path = require('path');
