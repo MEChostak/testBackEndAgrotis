@@ -8,11 +8,9 @@ var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/de
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _User = _interopRequireDefault(require("../models/User"));
+var _Table = _interopRequireDefault(require("../models/Table"));
 
-var _Organization = _interopRequireDefault(require("../models/Organization"));
-
-var _ValidatorUser = _interopRequireDefault(require("../services/ValidatorUser"));
+var _ValidatorTable = _interopRequireDefault(require("../services/ValidatorTable"));
 
 var Sequelize = require('sequelize');
 
@@ -22,22 +20,19 @@ var Op = Sequelize.Op;
 module.exports = {
   store: function store(req, res) {
     return (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
-      var obj, errorDetails, register, user;
+      var obj, errorDetails, register, table;
       return _regenerator["default"].wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
               obj = {
-                name: req.body.name,
-                password: req.body.password,
-                mail: req.body.mail,
-                personId: req.body.personId,
-                organizationId: req.body.organizationId,
-                organization: []
+                mouth: req.body.mouth,
+                year: req.body.year,
+                value: req.body.value
               }; // Valida o objeto
 
               _context.next = 3;
-              return _ValidatorUser["default"].user(obj);
+              return _ValidatorTable["default"].table(obj);
 
             case 3:
               errorDetails = _context.sent;
@@ -55,10 +50,10 @@ module.exports = {
 
             case 6:
               _context.next = 8;
-              return _User["default"].findAll({
+              return _Table["default"].findAll({
                 limit: 1,
                 where: {
-                  mail: obj.mail
+                  mouth: obj.mouth
                 }
               });
 
@@ -72,56 +67,37 @@ module.exports = {
 
               return _context.abrupt("return", res.status(400).json({
                 timestamp: Date.now(),
-                error: "User already registered.",
-                fields: [obj.name]
+                error: "Mouth already registered.",
+                fields: [obj.mouth]
               }));
 
             case 11:
-              if (obj.organizationId) {
-                _context.next = 17;
-                break;
-              }
+              _context.next = 13;
+              return _Table["default"].create(obj);
 
-              _context.next = 14;
-              return _User["default"].create(obj, {
-                include: [{
-                  association: 'organization'
-                }]
-              });
+            case 13:
+              table = _context.sent;
 
-            case 14:
-              user = _context.sent;
-              _context.next = 20;
-              break;
-
-            case 17:
-              _context.next = 19;
-              return _User["default"].create(obj);
-
-            case 19:
-              user = _context.sent;
-
-            case 20:
-              if (user) {
-                _context.next = 24;
+              if (table) {
+                _context.next = 18;
                 break;
               }
 
               return _context.abrupt("return", res.status(400).json({
                 timestamp: Date.now(),
                 ok: false,
-                message: "Fail to create User!"
+                message: "Fail to create Table!"
               }));
 
-            case 24:
+            case 18:
               return _context.abrupt("return", res.status(200).json({
                 timestamp: Date.now(),
                 ok: true,
-                message: "User created!",
-                data: user
+                message: "Table created!",
+                data: table
               }));
 
-            case 25:
+            case 19:
             case "end":
               return _context.stop();
           }
@@ -131,22 +107,20 @@ module.exports = {
   },
   update: function update(req, res) {
     return (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
-      var userId, obj, errorDetails, user, organization;
+      var tableId, obj, errorDetails, table;
       return _regenerator["default"].wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              userId = req.params.userId;
+              tableId = req.params.tableId;
               obj = {
-                name: req.body.name,
-                password: req.body.password,
-                mail: req.body.mail,
-                personId: req.body.personId,
-                organizationId: req.body.organizationId
+                mouth: req.body.mouth,
+                year: req.body.year,
+                value: req.body.value
               }; // Valida o objeto
 
               _context2.next = 4;
-              return _ValidatorUser["default"].userUpdate(obj);
+              return _ValidatorTable["default"].table(obj);
 
             case 4:
               errorDetails = _context2.sent;
@@ -164,12 +138,12 @@ module.exports = {
 
             case 7:
               _context2.next = 9;
-              return _User["default"].findByPk(userId);
+              return _Table["default"].findByPk(tableId);
 
             case 9:
-              user = _context2.sent;
+              table = _context2.sent;
 
-              if (user) {
+              if (table) {
                 _context2.next = 12;
                 break;
               }
@@ -177,50 +151,32 @@ module.exports = {
               return _context2.abrupt("return", res.status(400).json({
                 timestamp: Date.now(),
                 ok: false,
-                message: "User not found!"
+                message: "Table not found!"
               }));
 
             case 12:
-              _context2.next = 14;
-              return _Organization["default"].findByPk(obj.organizationId);
-
-            case 14:
-              organization = _context2.sent;
-
-              if (organization) {
-                _context2.next = 17;
-                break;
-              }
-
-              return _context2.abrupt("return", res.status(400).json({
-                timestamp: Date.now(),
-                ok: false,
-                message: "Organization not found!"
-              }));
-
-            case 17:
-              // Altera o user
-              _User["default"].update(obj, {
+              // Change table
+              _Table["default"].update(obj, {
                 where: {
-                  id: userId
+                  id: tableId
                 }
               }).then(function (result) {
                 console.log(result);
                 return res.status(200).json({
                   timestamp: Date.now(),
                   ok: true,
-                  message: "User updated!"
+                  message: "Table updated!"
                 });
               })["catch"](function (err) {
                 console.log(err);
                 return res.status(400).json({
                   timestamp: Date.now(),
                   ok: false,
-                  message: "Failed to update user!"
+                  message: "Failed to update table!"
                 });
               });
 
-            case 18:
+            case 13:
             case "end":
               return _context2.stop();
           }
@@ -230,28 +186,21 @@ module.exports = {
   },
   show: function show(req, res) {
     return (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
-      var userId;
+      var tableId;
       return _regenerator["default"].wrap(function _callee3$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              userId = req.params.userId; // Pesquisar o usuário
+              tableId = req.params.tableId; // Pesquisar a tabela
 
-              _User["default"].findByPk(userId // inclui na pesquisa todos os itens relacionados
-              // {
-              //     include: [
-              //         { association: 'profile' },
-              //         { association: 'organization' },
-              //     ]
-              // }
-              ).then(function (user) {
-                console.log(user);
+              _Table["default"].findByPk(tableId).then(function (table) {
+                console.log(table);
 
-                if (!user) {
+                if (!table) {
                   return res.status(400).json({
                     timestamp: Date.now(),
                     ok: false,
-                    message: "User not found!"
+                    message: "Table not found!"
                   });
                 }
 
@@ -259,14 +208,14 @@ module.exports = {
                   timestamp: Date.now(),
                   ok: true,
                   message: "",
-                  data: user
+                  data: table
                 });
               })["catch"](function (err) {
                 console.log(err);
                 return res.status(400).json({
                   timestamp: Date.now(),
                   ok: false,
-                  message: "Failed to find user!"
+                  message: "Failed to find table!"
                 });
               });
 
@@ -287,46 +236,43 @@ module.exports = {
             case 0:
               page = req.params.page;
               obj = {
-                name: req.body.name,
-                mail: req.body.mail,
-                organizationId: req.body.organizationId,
-                status: req.body.status,
-                personId: req.body.personId
+                mouth: req.body.mouth,
+                year: req.body.year,
+                value: req.body.value
               };
               Op = Sequelize.Op;
               whereClause = new Object();
 
-              if (obj.name) {
-                whereClause.name = (0, _defineProperty2["default"])({}, Op.like, '%' + obj.name + '%');
+              if (obj.mouth) {
+                whereClause.mouth = (0, _defineProperty2["default"])({}, Op.like, '%' + obj.mouth + '%');
               }
 
-              if (obj.organizationId) {
-                whereClause.organizationId = obj.organizationId;
+              if (obj.year) {
+                whereClause.year = (0, _defineProperty2["default"])({}, Op.like, '%' + obj.year + '%');
+              }
+
+              if (obj.value) {
+                whereClause.value = (0, _defineProperty2["default"])({}, Op.like, '%' + obj.value + '%');
               }
 
               console.log(obj);
               console.log("console log aqui", process.env.PER_PAGE);
 
-              _User["default"].findAndCountAll({
+              _Table["default"].findAndCountAll({
                 where: whereClause,
-
-                /* include: [
-                    { association: 'profile' },
-                    { association: 'organization' },
-                ], */
                 limit: parseInt(process.env.PER_PAGE),
                 offset: (page - 1) * parseInt(process.env.PER_PAGE),
                 order: [['id', 'DESC']]
-              }).then(function (user) {
+              }).then(function (table) {
                 var response = {
                   timestamp: Date.now(),
                   ok: true,
                   info: {
-                    totalRows: user.count,
-                    totalPages: Math.ceil(user.count / parseInt(process.env.PER_PAGE)),
+                    totalRows: table.count,
+                    totalPages: Math.ceil(table.count / parseInt(process.env.PER_PAGE)),
                     page: page
                   },
-                  elements: user.rows
+                  elements: table.rows
                 };
                 return res.status(200).json(response);
               })["catch"](function (err) {
@@ -334,11 +280,11 @@ module.exports = {
                 return res.status(400).json({
                   timestamp: Date.now(),
                   ok: false,
-                  message: "Failed to list user!"
+                  message: "Failed to list table!"
                 });
               });
 
-            case 9:
+            case 10:
             case "end":
               return _context4.stop();
           }
@@ -348,20 +294,20 @@ module.exports = {
   },
   "delete": function _delete(req, res) {
     return (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5() {
-      var userId, user;
+      var tableId, table;
       return _regenerator["default"].wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              userId = req.params.userId; // Verifica se o user existe
+              tableId = req.params.tableId; // Verifica se a table existe
 
               _context5.next = 3;
-              return _User["default"].findByPk(userId);
+              return _Table["default"].findByPk(tableId);
 
             case 3:
-              user = _context5.sent;
+              table = _context5.sent;
 
-              if (user) {
+              if (table) {
                 _context5.next = 6;
                 break;
               }
@@ -369,28 +315,28 @@ module.exports = {
               return _context5.abrupt("return", res.status(400).json({
                 timestamp: Date.now(),
                 ok: false,
-                message: "User not found!"
+                message: "Table not found!"
               }));
 
             case 6:
-              // Deleta o user
-              _User["default"].destroy({
+              // Del a table
+              _Table["default"].destroy({
                 where: {
-                  id: userId
+                  id: tableId
                 }
               }).then(function (result) {
                 console.log(result);
                 return res.status(400).json({
                   timestamp: Date.now(),
                   ok: false,
-                  message: "User deleted!"
+                  message: "Table deleted!"
                 });
               })["catch"](function (err) {
                 console.log(err);
                 return res.status(400).json({
                   timestamp: Date.now(),
                   ok: false,
-                  message: "Failed to delete user!"
+                  message: "Failed to delete table!"
                 });
               });
 
@@ -400,66 +346,6 @@ module.exports = {
           }
         }
       }, _callee5);
-    }))();
-  },
-  login: function login(req, res) {
-    return (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6() {
-      var obj;
-      return _regenerator["default"].wrap(function _callee6$(_context6) {
-        while (1) {
-          switch (_context6.prev = _context6.next) {
-            case 0:
-              obj = {
-                mail: req.body.mail,
-                password: req.body.password
-              };
-
-              _User["default"].findOne({
-                where: obj
-              }).then(function (user) {
-                console.log(user);
-
-                if (!user) {
-                  return res.status(200).send({
-                    ok: false,
-                    message: 'Usuário não cadastrado com o login informado'
-                  });
-                }
-
-                console.log("teste", user);
-                var _user = {
-                  id: user.id,
-                  name: user.name,
-                  mail: user.mail,
-                  organizationId: user.organizationId
-                };
-                console.log("user", _user);
-                var token = jwt.sign(_user, process.env.SECRETTOKEN, {
-                  expiresIn: eval(process.env.TIMEOUT)
-                });
-                console.log(token);
-                return res.status(200).send({
-                  ok: true,
-                  message: 'Usuário autenticado com sucesso',
-                  token: token,
-                  id: user.id,
-                  name: user.name
-                });
-              })["catch"](function (err) {
-                console.log(err.message);
-                return res.status(400).send({
-                  timestamp: Date.now(),
-                  ok: false,
-                  message: "Failed to find user"
-                });
-              });
-
-            case 2:
-            case "end":
-              return _context6.stop();
-          }
-        }
-      }, _callee6);
     }))();
   }
 };
