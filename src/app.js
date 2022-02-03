@@ -8,10 +8,7 @@ import fileUpload from 'express-fileupload';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import morgan from 'morgan';
-import BulkStore from '../src/app/services/BulkStore';
-
-
-const _ = require('lodash');
+import BulkStore from './app/services/BulkStore';
 
 import 'express-async-errors';
 
@@ -21,14 +18,16 @@ import routes from './routes';
 // --------
 import './database';
 
+const _ = require('lodash');
+
 class App {
     constructor() {
         this.server = express();
 
-        /*Sentry.init({
-          dsn: "https://c5246b46c60a423b874e75bf97444c0e@o466860.ingest.sentry.io/5559969",
-          tracesSampleRate: 0.5,
-        });*/
+        /* Sentry.init({
+                          dsn: "https://c5246b46c60a423b874e75bf97444c0e@o466860.ingest.sentry.io/5559969",
+                          tracesSampleRate: 0.5,
+                        }); */
 
         this.middlewares();
         this.routes();
@@ -43,13 +42,13 @@ class App {
         this.server.use(bodyParser.json());
         this.server.use(bodyParser.urlencoded({ extended: true }));
         this.server.use(morgan('dev'));
-        this.server.use(express.static(__dirname + '/public'));
+        this.server.use(express.static(`${__dirname}/public`));
     }
 
     service() {
-        setInterval(() => {
-            BulkStore();
-        }, 300000);
+        //setInterval(() => {
+        BulkStore();
+        //}, 3000);
     }
 
     routes() {
@@ -68,7 +67,7 @@ class App {
             const errors = await new Youch(err, req).toJSON();
             return res.status(500).json(errors);
 
-            //return res.status(500).json({ error: 'Internal server error' });
+            // return res.status(500).json({ error: 'Internal server error' });
         });
     }
 }
