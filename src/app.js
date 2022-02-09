@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
-import * as Sentry from '@sentry/node';
-import * as Tracing from '@sentry/tracing';
+// import * as Sentry from '@sentry/node';
+// import * as Tracing from '@sentry/tracing';
 import Youch from 'youch';
 import express from 'express';
 import fileUpload from 'express-fileupload';
@@ -36,7 +36,7 @@ class App {
     }
 
     middlewares() {
-        this.server.use(Sentry.Handlers.requestHandler());
+        // this.server.use(Sentry.Handlers.requestHandler());
         this.server.use(fileUpload({ createParentPath: true }));
         this.server.use(cors());
         this.server.use(bodyParser.json());

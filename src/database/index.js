@@ -8,6 +8,7 @@ import Plan from '../app/models/Plan';
 import Person from '../app/models/Person';
 import Table from '../app/models/Table';
 import PdfList from '../app/models/PdfList';
+import CustomersReading from '../app/models/CustomersReading';
 
 // eslint-disable-next-line no-unused-vars
 const models = [];
@@ -19,6 +20,7 @@ class Database {
 
     init() {
         // eslint-disable-next-line prettier/prettier
+        // @ts-ignore
         this.connection = new Sequelize(databaseConfig.database, databaseConfig.username, databaseConfig.password, databaseConfig)
 
         User.init(this.connection);
@@ -27,6 +29,7 @@ class Database {
         Person.init(this.connection);
         Table.init(this.connection);
         PdfList.init(this.connection);
+        CustomersReading.init(this.connection);
 
         /* associate */
 
@@ -34,7 +37,7 @@ class Database {
         Organization.init(this.connection);
         Plan.init(this.connection);
         Person.init(this.connection);
-
+        CustomersReading.init(this.connection);
 
         // models
         //   .map(model => model.init(this.connection))

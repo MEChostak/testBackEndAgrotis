@@ -7,6 +7,7 @@ import OrganizationController from './app/controllers/OrganizationController';
 import TableController from './app/controllers/TableController';
 import Auth from './app/middlewares/Auth';
 import PdfController from './app/controllers/PdfController';
+import CustomerReadingController from './app/controllers/CustomerReadingController';
 
 const routes = new Router();
 
@@ -18,6 +19,13 @@ routes.get('/user/show/:userId', Auth.middleware, UserController.show);
 routes.post('/user/store', Auth.middleware, UserController.store);
 routes.patch('/user/update/:userId' /* , Auth.middleware */ , UserController.update);
 routes.delete('/user/delete/:userId', Auth.middleware, UserController.delete);
+
+/** * CUSTOMERS READING  ** */
+routes.post('/customer/list/:page', Auth.middleware, CustomerReadingController.list);
+routes.get('/customer/show/:customerId', Auth.middleware, CustomerReadingController.show);
+routes.post('/customer/store', Auth.middleware, CustomerReadingController.store);
+routes.patch('/customer/update/:customerId' /* , Auth.middleware */ , CustomerReadingController.update);
+routes.delete('/customer/delete/:customerId', Auth.middleware, CustomerReadingController.delete);
 
 /** * ORGANIZATION ** */
 routes.post('/organization/list/:page', Auth.middleware, OrganizationController.list);
