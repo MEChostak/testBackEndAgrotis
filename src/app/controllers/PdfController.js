@@ -6,7 +6,10 @@ const fs = require("fs");
 const Op = Sequelize.Op
 const formidable = require('formidable');
 const path = require('path')
-    // const pdf = require('pdf2json');
+
+import CustomersReading from '../models/CustomersReading'
+const PDFParser = require('pdf2json');
+// const pdf = require('pdf2json');
 
 module.exports = {
     async bulk(req, res) {
@@ -45,6 +48,47 @@ module.exports = {
             })
     },
 
+    async update(req, res) {
+
+        const { PdfListId } = req.params;
+
+        const obj = {
+            name: req.body.name,
+            status: req.body.name
+        }
+
+        // Altera o status
+        PdfList.update(obj,
+
+                {
+                    limit: 1,
+                    where: {
+                        id: PdfListId,
+                        status: 'concluido',
+                    }
+                })
+            .then((result) => {
+
+                console.log(result);
+
+                return res.status(200).json({
+                    timestamp: Date.now(),
+                    ok: true,
+                    message: "Status updated!"
+                });
+
+            }).catch((err) => {
+
+                console.log(err);
+
+                return res.status(400).json({
+                    timestamp: Date.now(),
+                    ok: false,
+                    message: "Failed to update Status!"
+                });
+            });
+    },
+
     // Lista todos os arquivos Pdf
     async pdflist(req, res) {
         const { page } = req.params;
@@ -78,7 +122,6 @@ module.exports = {
                 })
             })
     },
-
 
 
 };

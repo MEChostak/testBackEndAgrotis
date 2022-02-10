@@ -1,14 +1,22 @@
 import { Router } from 'express';
 /*  */
+// @ts-ignore
 import UserController from './app/controllers/UserController';
+// @ts-ignore
 import PlanController from './app/controllers/PlanController';
+// @ts-ignore
 import PersonController from './app/controllers/PersonController';
+// @ts-ignore
 import OrganizationController from './app/controllers/OrganizationController';
+// @ts-ignore
 import TableController from './app/controllers/TableController';
 import Auth from './app/middlewares/Auth';
+// @ts-ignore
 import PdfController from './app/controllers/PdfController';
+// @ts-ignore
 import CustomerReadingController from './app/controllers/CustomerReadingController';
 
+// @ts-ignore
 const routes = new Router();
 
 routes.post('/user/login', UserController.login);
@@ -60,6 +68,8 @@ routes.delete('/table/delete/:tableId', Auth.middleware, TableController.delete)
 
 /** * PDF  ** */
 
-routes.post('/pdf/bulk', Auth.middleware, PdfController.bulk)
+routes.post('/pdf/bulk', Auth.middleware, PdfController.bulk);
+routes.patch('/pdf/update/:pdfId', Auth.middleware, PdfController.update);
+
 
 export default routes;

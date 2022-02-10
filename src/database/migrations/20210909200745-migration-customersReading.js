@@ -9,6 +9,10 @@ module.exports = {
                 allowNull: false,
                 primaryKey: true
             },
+            // contribListId: {
+            //     type: Sequelize.INTEGER,
+            //     allowNull: false,
+            // },
             name: {
                 type: Sequelize.STRING,
                 allowNull: false

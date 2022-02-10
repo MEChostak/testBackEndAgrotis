@@ -1,16 +1,22 @@
-import CustomersReading from '../models/CustomersReading';
+import CustomersReading from '../models/CustomersReading.js';
 
 // import ValidatorUser from '../services/ValidatorUser';
 
 const Sequelize = require('sequelize');
 
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+
+const fs = require("fs");
+
+const path = require('path');
 
 const Op = Sequelize.Op;
 
 module.exports = {
 
+
     async store(req, res) {
+
         const obj = {
             name: req.body.name,
             nit: req.body.nit,
@@ -50,7 +56,6 @@ module.exports = {
         }
 
         let customer;
-        // Valida de organização existe
         customer = await CustomersReading.create(obj);
 
 

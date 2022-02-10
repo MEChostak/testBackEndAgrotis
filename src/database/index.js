@@ -9,9 +9,10 @@ import Person from '../app/models/Person';
 import Table from '../app/models/Table';
 import PdfList from '../app/models/PdfList';
 import CustomersReading from '../app/models/CustomersReading';
+import ContribList from '../app/models/ContribList';
 
 // eslint-disable-next-line no-unused-vars
-const models = [];
+// const models = [];
 
 class Database {
     constructor() {
@@ -30,15 +31,16 @@ class Database {
         Table.init(this.connection);
         PdfList.init(this.connection);
         CustomersReading.init(this.connection);
+        ContribList.init(this.connection);
 
         /* associate */
 
         User.associate(this.connection.models);
-        Organization.init(this.connection);
-        Plan.init(this.connection);
-        Person.init(this.connection);
-        CustomersReading.init(this.connection);
-
+        Organization.associate(this.connection.models);
+        Plan.associate(this.connection.models);
+        Person.associate(this.connection.models);
+        CustomersReading.associate(this.connection.models);
+        ContribList.associate(this.connection.models);
         // models
         //   .map(model => model.init(this.connection))
         //   .map(model => model.associate && model.associate(this.connection.models));
