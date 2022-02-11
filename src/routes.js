@@ -29,9 +29,9 @@ routes.patch('/user/update/:userId' /* , Auth.middleware */ , UserController.upd
 routes.delete('/user/delete/:userId', Auth.middleware, UserController.delete);
 
 /** * CUSTOMERS READING  ** */
-routes.post('/customer/list/:page', Auth.middleware, CustomerReadingController.list);
+routes.post('/customer/list/:page', /* Auth.middleware, */ CustomerReadingController.list);
 routes.get('/customer/show/:customerId', Auth.middleware, CustomerReadingController.show);
-routes.post('/customer/store', Auth.middleware, CustomerReadingController.store);
+routes.post('/customer/store', /* Auth.middleware, */ CustomerReadingController.store);
 routes.patch('/customer/update/:customerId' /* , Auth.middleware */ , CustomerReadingController.update);
 routes.delete('/customer/delete/:customerId', Auth.middleware, CustomerReadingController.delete);
 

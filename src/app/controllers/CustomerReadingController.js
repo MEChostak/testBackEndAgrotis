@@ -13,8 +13,6 @@ const path = require('path');
 const Op = Sequelize.Op;
 
 module.exports = {
-
-
     async store(req, res) {
 
         const obj = {
@@ -24,11 +22,12 @@ module.exports = {
             birth: req.body.birth,
             mother: req.body.mother,
             extract: req.body.extract,
+            infoList: [],
             contribList: []
         }
-
-        // Valida o objeto
-        // const errorDetails = await ValidatorUser.user(obj);
+        console.log(obj.contribList)
+            // Valida o objeto
+            // const errorDetails = await ValidatorUser.user(obj);
 
         // if (errorDetails != 0) {
         //     return res.status(400).json({
@@ -38,26 +37,8 @@ module.exports = {
         //     });
         // }
 
-        // Verifica se o user já está existe
-        const register = await CustomersReading.findAll({
-            limit: 1,
-            where: {
-                name: obj.name
-            }
-        });
-        if (register.length > 0) {
-            return res.status(400).json({
-                timestamp: Date.now(),
-                error: "Customer already registered.",
-                fields: [
-                    obj.name,
-                ]
-            });
-        }
-
         let customer;
         customer = await CustomersReading.create(obj);
-
 
         if (!customer) {
             return res.status(400).json({
@@ -86,7 +67,7 @@ module.exports = {
             birth: req.body.birth,
             mother: req.body.mother,
             extract: req.body.extract,
-            contribList: []
+            // contribList: []
         }
 
         // Valida o objeto
@@ -100,7 +81,7 @@ module.exports = {
         //     });
         // }
 
-        // Verifica se o user existe
+        // Verifica se o existe
         let customer = await CustomersReading.findByPk(
             customerId
         );
@@ -184,7 +165,7 @@ module.exports = {
             birth: req.body.birth,
             mother: req.body.mother,
             extract: req.body.extract,
-            contribList: []
+            // contribList: []
         }
 
         const Op = Sequelize.Op;

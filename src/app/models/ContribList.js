@@ -17,10 +17,10 @@ class ContribList extends Model {
 
     static associate(models) {
         // @ts-ignore
-        this.belongsTo(models.CustomersReading, {
-            foreignKey: 'customersReadingId',
-            as: 'customersReading'
-        });
+        // this.belongsTo(models.CustomersReading, {
+        //     foreignKey: 'customersReadingId',
+        //     as: 'customersReading'
+        // });
     }
 }
 

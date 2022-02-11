@@ -10,14 +10,15 @@ class CustomersReading extends Model {
             birth: DataTypes.STRING,
             mother: DataTypes.STRING,
             extract: DataTypes.STRING,
-            contribList: DataTypes.STRING,
+            infoList: DataTypes.JSON,
+            contribList: DataTypes.JSON,
         }, {
             sequelize,
         });
     }
 
     static associate(models) {
-        // this.belongsTo(models.ContribList, {
+        // this.hasMany(models.ContribList, {
         //     foreignKey: 'contribListId',
         //     as: 'contribList'
         // });

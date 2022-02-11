@@ -9,10 +9,10 @@ module.exports = {
                 allowNull: false,
                 primaryKey: true
             },
-            customersReadingId: {
-                type: Sequelize.INTEGER,
-                allowNull: false,
-            },
+            // customersReadingId: {
+            //     type: Sequelize.INTEGER,
+            //     allowNull: false,
+            // },
             comp: {
                 type: Sequelize.STRING,
                 allowNull: false

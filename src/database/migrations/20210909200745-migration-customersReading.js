@@ -9,10 +9,6 @@ module.exports = {
                 allowNull: false,
                 primaryKey: true
             },
-            // contribListId: {
-            //     type: Sequelize.INTEGER,
-            //     allowNull: false,
-            // },
             name: {
                 type: Sequelize.STRING,
                 allowNull: false
@@ -37,11 +33,14 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: false
             },
-            contribList: {
-                type: Sequelize.STRING,
-                allowNull: false
+            infoList: {
+                type: Sequelize.JSON,
+                allowNull: true
             },
-
+            contribList: {
+                type: Sequelize.JSON,
+                allowNull: true
+            },
             createdAt: {
                 type: Sequelize.DATE,
                 allowNull: false,

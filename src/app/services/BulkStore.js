@@ -1,6 +1,43 @@
 // @ts-nocheck
 
 // eslint-disable-next-line no-unused-vars
+
+/*contribution {
+    competencia;
+    String pagamento;
+    String salario;
+    String indicativo;
+    String contribuicao;
+}
+
+class Sequence {
+    String nit;
+    String codigo;
+    String origem;
+    String inicio;
+    String fim;
+    String tipo;
+    Array contribuicoes;
+}
+
+class Statement {
+    String data;
+    String descricao;
+    Array sequencias;
+}
+
+class Person {
+    String nit;
+    String nascimento;
+    String cpf;
+    String nome;
+    String nomeMae;
+}
+
+class Calc {
+    String nomeMae;
+}
+*/
 async function BulkStore(req, res) {
     const CustomersReading = ('../models/CustomersReading.js');
     const PdfList = require('../models/PdfList.js');
@@ -46,14 +83,18 @@ async function BulkStore(req, res) {
         // console.log(vetor);
 
         var listContrib = [];
-
         var listInfo = [];
-
-        var lendo = 0;
+        var lendoContribuicoes = 0;
+        var lendoRemuneracoes = 0;
+        var lendoBeneficios = 0;
+        var cabecalho = 0;
         var j = 0;
-
+        let statement = {};
+        var sequency = {};
+        //console.log('vetor', vetor);
 
         for (var i = 0; i < vetor.length; i++) {
+            // console.log('vetor i', vetor[i]);
             var contrib = [];
             var contrib2 = [];
             var contrib3 = [];
@@ -64,121 +105,141 @@ async function BulkStore(req, res) {
             var info2 = [];
             var info3 = [];
 
-            if (vetor[i].indexOf('Extrato Previdenciário\r') == 0) {
-
-                info['extract'] = vetor[i + 1].replace('\r', '');
-                info['nit'] = vetor[i + 3].replace('\r', '');
-                info['cpf'] = vetor[i + 5].replace('\r', '');
-                info['name'] = vetor[i + 7].replace('\r', '');
-                info['birth'] = vetor[i + 9].replace('\r', '');
-                info['mother'] = vetor[i + 11].replace('\r', '');
-                info['page'] = vetor[i + 12].substring(7).replace(' de\r', '');
-
-                listInfo.push(info);
-                // console.log(info);
+            if (vetor[i].indexOf('Extrato Previdenciário\r') == 0 && cabecalho != 1) {
+                //var statement = {}
+                statement.data = vetor[i + 1].replace('\r', '');
+                statement.person = {
+                    nit: vetor[i + 3].replace('\r', ''),
+                    cpf: vetor[i + 5].replace('\r', ''),
+                    name: vetor[i + 7].replace('\r', ''),
+                    birth: vetor[i + 9].replace('\r', ''),
+                    mother: vetor[i + 11].replace('\r', ''),
+                };
+                statement.sequencies = [];
+                cabecalho = 1;
             }
 
             /**************************************************************************************************/
             /*****************LEITURA PARA ARQUIVOS QUE CONTENHAM RENDA CONTRUBUINTE INDIVIDUAL****************/
             /**************************************************************************************************/
 
-            // // console.log(`for ${i}`);
-            if (vetor[i].indexOf('Contribuições') == 0) {
-                //console.log(`for ${i}`)
+            if (vetor[i].indexOf('RECOLHIMENTO') == 0) {
+                // console.log('RECOLHIMENTO', 1);
+                // console.log(`for ${i}`)
                 // console.log(vetor[i]);
 
-                contrib['comp'] = vetor[i].substring(13).replace('\r', '');
-                contrib['dtPgto'] = vetor[i + 1].replace('\r', '');
-                contrib['salContrib'] = vetor[i + 2].replace('\r', '');
-                contrib['ind'] = vetor[i + 3].replace('\r', '');
+                var sequency = {
+                    seq: vetor[i - 5].replace('\r', ''),
+                    nit: vetor[i - 1].replace('\r', ''),
+                    dataInit: vetor[i - 3].replace('\r', ''),
+                    dataEnd: vetor[i - 2].replace('\r', ''),
+                    contribList: []
+                }
+                console.log('sequency', sequency);
+            }
+
+            if (vetor[i].indexOf('Contribuições') == 0) {
+                var contrib = {
+                    comp: vetor[i].substring(13).replace('\r', ''),
+                    dtPgto: vetor[i + 1].replace('\r', ''),
+                    salContrib: vetor[i + 2].replace('\r', ''),
+                    ind: vetor[i + 3].replace('\r', '')
+                }
 
                 if (vetor[i + 4].indexOf('/') != 2) {
-                    contrib['contrib'] = vetor[i + 3].replace('\r', '');
+                    contrib.contrib = vetor[i + 3].replace('\r', '');
 
-                    listContrib.push(contrib);
-                    // console.log(contrib);
+                    sequency.contribList.push(contrib);
+                    // console.log('contrib', contrib);
+                    statement.sequencies.push(sequency);
+                    // console.log('sequency', sequency);
 
                     /// APARENTEMENTE OK
                     j = j + 1;
                     i = i + 5;
-                    lendo = 0;
+                    lendoContribuicoes = 0;
 
                 } else {
-                    contrib2['comp'] = vetor[i + 3].replace('\r', '');
-                    contrib2['dtPgto'] = vetor[i + 4].replace('\r', '');
-                    contrib2['salContrib'] = vetor[i + 5].replace('\r', '');
-                    // contrib2['ind'] = vetor[i + 7].replace('\r', '');
+                    var contrib2 = {
+                        comp: vetor[i + 3].replace('\r', ''),
+                        dtPgto: vetor[i + 4].replace('\r', ''),
+                        salContrib: vetor[i + 5].replace('\r', ''),
+                        // contrib2['ind'] = vetor[i + 7].replace('\r', '');
+                    }
 
-                    contrib['contrib'] = vetor[i + 6].replace('\r', '');
-                    contrib2['contrib'] = vetor[i + 7].replace('\r', '');
+                    contrib.contrib = vetor[i + 6].replace('\r', '');
+                    contrib2.contrib = vetor[i + 7].replace('\r', '');
 
                     // console.log(contrib);
-                    listContrib.push(contrib);
+                    // console.log('sequency', sequency)
+                    sequency.contribList.push(contrib);
 
                     // console.log(contrib2);
-                    listContrib.push(contrib2);
+                    sequency.contribList.push(contrib2);
+                    statement.sequencies.push(sequency);
 
                     j = j + 1;
                     i = i + 10;
-                    lendo = 1;
-
-
+                    lendoContribuicoes = 1;
                     // console.log(vetor[i]);
                 }
             }
 
-            if (lendo && vetor[i].indexOf('/') == 2) {
+            if (lendoContribuicoes && vetor[i].indexOf('/') == 2) {
                 //console.log(`for ${i}`);
                 //console.log(`lendo: ${lendo}`);
-
-                contrib['comp'] = vetor[i].replace('\r', '');
-                contrib['dtPgto'] = vetor[i + 1].replace('\r', '');
-                contrib['salContrib'] = vetor[i + 2].replace('\r', '');
-                contrib['ind'] = vetor[i + 3].replace('\r', '');
+                var contrib = {
+                    comp: vetor[i].replace('\r', ''),
+                    dtPgto: vetor[i + 1].replace('\r', ''),
+                    salContrib: vetor[i + 2].replace('\r', ''),
+                    ind: vetor[i + 3].replace('\r', ''),
+                }
 
                 //console.log(`contrib 2: ${vetor[i + 4]}`);
                 if (vetor[i + 4].indexOf('/') != 2) {
                     contrib['contrib'] = vetor[i + 4].replace('\r', '');
 
                     // console.log(contrib);
-                    listContrib.push(contrib);
+                    sequency.contribList.push(contrib);
+                    statement.sequencies.push(sequency);
 
                     j = j + 1;
                     i = i + 5;
-                    lendo = 0;
+                    lendoContribuicoes = 0;
 
                 } else {
-                    contrib2['comp'] = vetor[i + 4].replace('\r', '');
-                    contrib2['dtPgto'] = vetor[i + 5].replace('\r', '');
-                    contrib2['salContrib'] = vetor[i + 6].replace('\r', '');
-                    contrib2['ind'] = vetor[i + 7].replace('\r', '');
+                    var contrib2 = {
+                        comp: vetor[i + 4].replace('\r', ''),
+                        dtPgto: vetor[i + 5].replace('\r', ''),
+                        salContrib: vetor[i + 6].replace('\r', ''),
+                        ind: vetor[i + 7].replace('\r', ''),
+                    }
 
-                    contrib['contrib'] = vetor[i + 8].replace('\r', '');
-                    contrib2['contrib'] = vetor[i + 9].replace('\r', '');
+                    contrib.contrib = vetor[i + 8].replace('\r', '');
+                    contrib2.contrib = vetor[i + 9].replace('\r', '');
 
                     // console.log(contrib);
-                    listContrib.push(contrib);
+                    sequency.contribList.push(contrib);
 
                     // console.log(contrib2);
-                    listContrib.push(contrib2);
+                    sequency.contribList.push(contrib2);
 
 
                     j = j + 1;
-                    lendo = 1;
+                    lendoContribuicoes = 1;
                     i = i + 9;
 
                     // console.log(vetor[i]);
                 }
 
-            } else {
-                lendo = 0
+            } else if (lendoContribuicoes) {
+                lendoContribuicoes = 0
+                statement.sequencies.push(sequency)
             }
 
             /**************************************************************************************************/
             /************************LEITURA PARA ARQUIVOS QUE CONTENHAM RENDA == BENEFICIO *******************/
             /**************************************************************************************************/
-
-
             if (vetor[i].indexOf('Benefício') == 0) {
                 //console.log(`for ${i}`)
                 // console.log(vetor[i]);
@@ -207,7 +268,7 @@ async function BulkStore(req, res) {
                     /// APARENTEMENTE OK
                     j = j + 1;
                     i = i + 12;
-                    lendo = 1;
+                    lendoBeneficios = 1;
                     // console.log('passei')
 
                 } else {
@@ -219,12 +280,12 @@ async function BulkStore(req, res) {
                     // console.log(contrib4);
 
                     j = j + 1;
-                    lendo = 1;
+                    lendoBeneficios = 1;
                     i = i + 14;
                 }
             }
 
-            if (lendo && vetor[i].indexOf('/') == 2) {
+            if (lendoBeneficios && vetor[i].indexOf('/') == 2) {
                 // console.log(`for ${i}`);
                 // console.log(`lendo: ${lendo}`);
                 // console.log(vetor[i + 1])
@@ -242,19 +303,17 @@ async function BulkStore(req, res) {
                 if (vetor[i].indexOf('/') != 2) {
                     /// APARENTEMENTE OK
                     j = j + 1;
-                    lendo = 1;
+                    lendoBeneficios = 1;
                     // console.log('passei')
                 }
 
             } else {
-                lendo = 0;
+                lendoBeneficios = 0;
             }
 
             /**************************************************************************************************/
             /************************LEITURA PARA ARQUIVOS QUE CONTENHAM RENDA DE EMPREGADO *******************/
             /**************************************************************************************************/
-
-
             if (vetor[i].indexOf('Código Emp.') == 0) {
                 //console.log(`for ${i}`)
                 // console.log(vetor[i]);
@@ -284,7 +343,7 @@ async function BulkStore(req, res) {
                     /// APARENTEMENTE OK
                     j = j + 1;
                     i = i + 27;
-                    lendo = 1;
+                    lendoRemuneracoes = 1;
                     console.log('passei', vetor[i + 27])
 
                 } else {
@@ -296,12 +355,12 @@ async function BulkStore(req, res) {
                     // console.log(contrib6);
 
                     j = j + 1;
-                    lendo = 1;
+                    lendoRemuneracoes = 1;
                     i = i + 30;
                 }
             }
 
-            if (lendo && vetor[i].indexOf('/') == 2) {
+            if (lendoRemuneracoes && vetor[i].indexOf('/') == 2) {
                 // console.log(`for ${i}`);
                 // console.log(`lendo: ${lendo}`);
                 // console.log(vetor[i])
@@ -320,12 +379,12 @@ async function BulkStore(req, res) {
                 if (vetor[i].indexOf('/') != 2) {
                     /// APARENTEMENTE OK
                     j = j + 1;
-                    lendo = 1;
+                    lendoRemuneracoes = 1;
                     // console.log('passei')
                 }
 
             } else {
-                lendo = 0;
+                lendoRemuneracoes = 0;
             }
             // console.log(listContrib);
             // console.log(listInfo);
@@ -341,9 +400,10 @@ async function BulkStore(req, res) {
                 mother: listInfo[0].mother,
                 extract: listInfo[0].extract,
                 infoList: listInfo,
-                contribList: [listContrib],
+                contribList: listContrib,
             }
-            // console.log("data", obj)
+            // console.log("statement", statement)
+        statement.sequencies.map(value => console.log(value));
         files.push(obj)
         jsonOut(obj)
 
@@ -359,8 +419,8 @@ async function BulkStore(req, res) {
                     /* update no status do arquivo pdf */
                     // update(id);
                     /* store obj após leitura do pdf */
-                store(obj);
-                // console.log(obj)
+                    // store(obj);
+                    // console.log(obj)
 
             } catch (error) {
                 console.log(error)
@@ -374,7 +434,7 @@ async function store(obj, req, res) {
     const Sequelize = require('sequelize');
     const CustomersReading = require('../models/CustomersReading.js');
     const CustomerReadingController = require('../controllers/CustomerReadingController');
-    // console.log("chamei", obj)
+    // console.log("chamei", obj.contribList[0])
     // atualizar arquivo com status pendente
 
     const data = {
@@ -384,32 +444,28 @@ async function store(obj, req, res) {
         birth: obj.birth,
         mother: obj.mother,
         extract: obj.extract,
-        // infoList: JSON.stringify(obj.infoList),
-        // contribList: JSON.stringify(obj.infoList),
+        infoList: obj.infoList.toString(),
+        contribList: obj.contribList.toString(),
     }
     console.log(data)
     let customer;
 
-    customer = await CustomersReading.create(data, {
-        // include: [
-        //     { association: 'contribList' },
-        // ]
-    });
+    customer = await CustomersReading.create(data);
 
-    if (!customer) {
-        return res.status(400).json({
-            timestamp: Date.now(),
-            ok: false,
-            message: "Fail to create Customer!",
-        });
-    } else {
-        return res.status(200).json({
-            timestamp: Date.now(),
-            ok: true,
-            message: "Customer created!",
-            data: customer
-        });
-    }
+    // if (!customer) {
+    //     return res.status(400).json({
+    //         timestamp: Date.now(),
+    //         ok: false,
+    //         message: "Fail to create Customer!",
+    //     });
+    // } else {
+    //     return res.status(200).json({
+    //         timestamp: Date.now(),
+    //         ok: true,
+    //         message: "Customer created!",
+    //         data: customer
+    //     });
+    // }
 }
 
 
