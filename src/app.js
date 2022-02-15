@@ -46,9 +46,9 @@ class App {
     }
 
     service() {
-        //setInterval(() => {
+        // setInterval(() => {
         BulkStore();
-        //}, 4000);
+        // }, 4000);
     }
 
     routes() {

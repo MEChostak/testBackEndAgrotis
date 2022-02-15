@@ -1,43 +1,5 @@
 // @ts-nocheck
-
 // eslint-disable-next-line no-unused-vars
-
-/*contribution {
-    competencia;
-    String pagamento;
-    String salario;
-    String indicativo;
-    String contribuicao;
-}
-
-class Sequence {
-    String nit;
-    String codigo;
-    String origem;
-    String inicio;
-    String fim;
-    String tipo;
-    Array contribuicoes;
-}
-
-class Statement {
-    String data;
-    String descricao;
-    Array sequencias;
-}
-
-class Person {
-    String nit;
-    String nascimento;
-    String cpf;
-    String nome;
-    String nomeMae;
-}
-
-class Calc {
-    String nomeMae;
-}
-*/
 async function BulkStore(req, res) {
     const CustomersReading = ('../models/CustomersReading.js');
     const PdfList = require('../models/PdfList.js');
@@ -392,6 +354,7 @@ async function BulkStore(req, res) {
         }
         // index = i;
 
+        /* provavel não ira usar */
         const obj = {
                 name: listInfo[0].name,
                 nit: listInfo[0].nit,
@@ -402,9 +365,14 @@ async function BulkStore(req, res) {
                 infoList: listInfo,
                 contribList: listContrib,
             }
+
+            /* to do */
             // console.log("statement", statement)
-        statement.sequencies.map(value => console.log(value));
+        /* linha 372 este trecho mapeia os dados do obj */
+            statement.sequencies.map(value => console.log(value));
+        /*  */
         files.push(obj)
+
         jsonOut(obj)
 
 
@@ -467,7 +435,6 @@ async function store(obj, req, res) {
     //     });
     // }
 }
-
 
 async function update(res) {
     // console.log("chamei", res)
