@@ -1,350 +1,451 @@
 import User from '../models/User';
-
-import Organization from '../models/Organization';
+import Laboratorio from '../models/Laboratorio';
+import infosPropriedade from '../models/infosPropriedade';
 
 import ValidatorUser from '../services/ValidatorUser';
 
 const Sequelize = require('sequelize');
 
-const jwt = require('jsonwebtoken')
-
 const Op = Sequelize.Op;
 
 module.exports = {
+  async store(req, res) {
+    console.log(req.body.infosPropriedade);
+    const obj = {
+      nome: req.body.nome,
+      dataInicial: req.body.dataInicial,
+      dataFinal: req.body.dataFinal,
+      cnpj: req.body.cnpj,
+      infosPropriedade: [],
+      laboratorio: [],
+      observacoes: req.body.observacoes,
+    };
 
-    async store(req, res) {
-        const obj = {
-            name: req.body.name,
-            password: req.body.password,
-            mail: req.body.mail,
-            personId: req.body.personId,
-            organizationId: req.body.organizationId,
-            organization: []
-        }
+    if (req.body.infosPropriedade) {
+      req.body.infosPropriedade.forEach(element => {
+        obj.infosPropriedade.push(element);
+      });
+    }
 
-        // Valida o objeto
-        const errorDetails = await ValidatorUser.user(obj);
+    if (req.body.laboratorio) {
+      req.body.laboratorio.forEach(element => {
+        obj.laboratorio.push(element);
+      });
+    }
 
-        if (errorDetails != 0) {
-            return res.status(400).json({
-                timestamp: Date.now(),
-                error: "Malformed object.",
-                fields: errorDetails
-            });
-        }
+    // Valida o objeto
+    const errorDetails = await ValidatorUser.user(obj);
 
-        // Verifica se o user já está existe
-        const register = await User.findAll({
-            limit: 1,
-            where: {
-                mail: obj.mail
-            }
+    if (errorDetails != 0) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        error: 'Malformed object.',
+        fields: errorDetails,
+      });
+    }
+
+    // Verifica se o user já está existe
+    const register = await User.findAll({
+      limit: 1,
+      where: {
+        nome: obj.nome,
+      },
+    });
+    if (register.length > 0) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        error: 'User already registered.',
+        fields: [obj.nome],
+      });
+    }
+
+    let user = await User.create(obj, {
+      include: [
+        { association: 'laboratorio' },
+        { association: 'infosPropriedade' },
+      ],
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        ok: false,
+        message: 'Fail to create User!',
+      });
+    } else {
+      return res.status(200).json({
+        timestamp: Date.now(),
+        ok: true,
+        message: 'User created!',
+        data: user,
+      });
+    }
+  },
+
+  async update(req, res) {
+    const { userId } = req.params;
+
+    const obj = {
+      nome: req.body.nome,
+      dataInicial: req.body.dataInicial,
+      dataFinal: req.body.dataFinal,
+      cnpj: req.body.cnpj,
+      observacoes: req.body.observacoes,
+      infosPropriedade: [],
+      laboratorio: [],
+    };
+
+    // Valida o objeto
+    const errorDetails = await ValidatorUser.user(obj);
+
+    if (errorDetails != 0) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        error: 'Malformed object.',
+        fields: errorDetails,
+      });
+    }
+
+    // Verifica se o user existe
+    let user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        ok: false,
+        message: 'User not found!',
+      });
+    }
+
+    // Altera o user
+    User.update(obj, { where: { id: userId } })
+      .then(result => {
+        console.log(result);
+
+        return res.status(200).json({
+          timestamp: Date.now(),
+          ok: true,
+          message: 'User updated!',
         });
-        if (register.length > 0) {
-            return res.status(400).json({
-                timestamp: Date.now(),
-                error: "User already registered.",
-                fields: [
-                    obj.name,
-                ]
-            });
-        }
+      })
+      .catch(err => {
+        console.log(err);
 
-        let user;
+        return res.status(400).json({
+          timestamp: Date.now(),
+          ok: false,
+          message: 'Failed to update user!',
+        });
+      });
+  },
 
-        if (!obj.organizationId) {
-            user = await User.create(
-                obj, {
-                include: [
-                    { association: 'organization' },
-                ]
-            }
-            );
-        } else {
-            // Valida de organização existe
-            user = await User.create(obj);
+  async show(req, res) {
+    const userId = req.params.userId;
 
-        }
+    // Pesquisar o usuário
+    User.findByPk(userId, {
+      include: [
+        { association: 'laboratorio' },
+        { association: 'infosPropriedade' },
+      ],
+    })
+      .then(user => {
+        console.log(user);
 
         if (!user) {
-            return res.status(400).json({
-                timestamp: Date.now(),
-                ok: false,
-                message: "Fail to create User!",
-            });
-        } else {
-            return res.status(200).json({
-                timestamp: Date.now(),
-                ok: true,
-                message: "User created!",
-                data: user
-            });
-        }
-    },
-
-    async update(req, res) {
-
-        const { userId } = req.params;
-
-        const obj = {
-            name: req.body.name,
-            password: req.body.password,
-            mail: req.body.mail,
-            personId: req.body.personId,
-            organizationId: req.body.organizationId
+          return res.status(400).json({
+            timestamp: Date.now(),
+            ok: false,
+            message: 'User not found!',
+          });
         }
 
-        // Valida o objeto
-        const errorDetails = await ValidatorUser.userUpdate(obj);
+        return res.status(200).json({
+          timestamp: Date.now(),
+          ok: true,
+          message: '',
+          data: user,
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        return res.status(400).json({
+          timestamp: Date.now(),
+          ok: false,
+          message: 'Failed to find user!',
+        });
+      });
+  },
 
-        if (errorDetails != 0) {
-            return res.status(400).json({
-                timestamp: Date.now(),
-                error: "Malformed object.",
-                fields: errorDetails
-            });
-        }
+  async list(req, res) {
+    const page = req.params.page;
 
-        // Verifica se o user existe
-        let user = await User.findByPk(
-            userId
-        );
-        if (!user) {
-            return res.status(400).json({
-                timestamp: Date.now(),
-                ok: false,
-                message: "User not found!"
-            });
-        }
+    const obj = {
+      nome: req.body.nome,
+      cnpj: req.body.cnpj,
+    };
 
-        // Verifica se a organização existe
-        let organization = await Organization.findByPk(
-            obj.organizationId
-        );
-        if (!organization) {
-            return res.status(400).json({
-                timestamp: Date.now(),
-                ok: false,
-                message: "Organization not found!"
-            });
-        }
+    const Op = Sequelize.Op;
+    var whereClause = new Object();
 
-        // Altera o user
-        User.update(obj, { where: { id: userId } })
-            .then((result) => {
+    if (obj.nome) {
+      whereClause.nome = {
+        [Op.like]: '%' + obj.nome + '%',
+      };
+    }
 
-                console.log(result);
+    if (obj.cnpj) {
+      whereClause.cnpj = {
+        [Op.like]: '%' + obj.cnpj + '%',
+      };
+    }
 
-                return res.status(200).json({
-                    timestamp: Date.now(),
-                    ok: true,
-                    message: "User updated!"
-                });
+    User.findAndCountAll({
+      where: whereClause,
+      include: [
+        { association: 'laboratorio' },
+        { association: 'infosPropriedade' },
+      ],
+      limit: parseInt(process.env.PER_PAGE),
+      offset: (page - 1) * parseInt(process.env.PER_PAGE),
+      order: [['id', 'DESC']],
+    })
+      .then(user => {
+        let response = {
+          timestamp: Date.now(),
+          ok: true,
+          info: {
+            totalRows: user.count,
+            totalPages: Math.ceil(user.count / parseInt(process.env.PER_PAGE)),
+            page: page,
+          },
+          elements: user.rows,
+        };
 
-            }).catch((err) => {
+        return res.status(200).json(response);
+      })
+      .catch(err => {
+        console.log(err);
+        return res.status(400).json({
+          timestamp: Date.now(),
+          ok: false,
+          message: 'Failed to list user!',
+        });
+      });
+  },
 
-                console.log(err);
+  async delete(req, res) {
+    const { userId } = req.params;
 
-                return res.status(400).json({
-                    timestamp: Date.now(),
-                    ok: false,
-                    message: "Failed to update user!"
-                });
-            });
-    },
+    // Verifica se o user existe
+    let user = await User.findByPk(userId);
 
-    async show(req, res) {
+    if (!user) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        ok: false,
+        message: 'User not found!',
+      });
+    }
 
-        const userId = req.params.userId;
+    // Deleta o user
+    User.destroy({ where: { id: userId } })
+      .then(result => {
+        console.log(result);
 
-        // Pesquisar o usuário
-        User.findByPk(
-            userId,
-            // inclui na pesquisa todos os itens relacionados
-            // {
-            //     include: [
-            //         { association: 'profile' },
-            //         { association: 'organization' },
-            //     ]
-            // }
-        ).then(user => {
+        return res.status(400).json({
+          timestamp: Date.now(),
+          ok: false,
+          message: 'User deleted!',
+        });
+      })
+      .catch(err => {
+        console.log(err);
 
-            console.log(user);
+        return res.status(400).json({
+          timestamp: Date.now(),
+          ok: false,
+          message: 'Failed to delete user!',
+        });
+      });
+  },
 
-            if (!user) {
-                return res.status(400).json({
-                    timestamp: Date.now(),
-                    ok: false,
-                    message: "User not found!"
-                });
-            }
+  /*  */
+  /*  */
+  /*  */
 
-            return res.status(200).json({
-                timestamp: Date.now(),
-                ok: true,
-                message: "",
-                data: user
-            });
+  // Adicionar lab
+  async labStore(req, res) {
+    const obj = {
+      userId: {},
+      idLab: req.body.idLab,
+      nomeLab: req.body.nomeLab,
+    };
 
-        }).catch(err => {
+    // Id do usuário
+    if (req.body.userId) {
+      obj.userId = req.body.userId;
+    }
 
-            console.log(err);
-            return res.status(400).json({
-                timestamp: Date.now(),
-                ok: false,
-                message: "Failed to find user!"
-            });
+    const errorDetails = await ValidatorLab.lab(obj);
+    if (errorDetails != 0) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        error: 'Malformed object.',
+        fields: errorDetails,
+      });
+    }
+
+    // Verifica se o usuário existe
+    const register = await User.findAll({
+      limit: 1,
+      where: {
+        id: obj.userId,
+      },
+    });
+    if (register.length == 0) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        error: "User doesn't exist",
+        fields: [obj.userId],
+      });
+    }
+
+    // Cria na tabela
+    let lab = await Laboratorio.create(obj);
+    if (!lab) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        ok: false,
+        message: 'Fail to create laboratory!',
+      });
+    } else {
+      return res.status(200).json({
+        timestamp: Date.now(),
+        ok: true,
+        message: 'Laboratory created!',
+        address: obj,
+      });
+    }
+  },
+
+  // Deletar lab
+  async labDelete(req, res) {
+    const { labId } = req.params;
+
+    let lab = await Laboratorio.findByPk(labId);
+    if (!lab) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        ok: false,
+        message: 'Laboratory not found!',
+      });
+    } else {
+      Laboratorio.destroy({ where: { id: labId } })
+        .then(result => {
+          return res.status(200).json({
+            timestamp: Date.now(),
+            ok: true,
+            message: 'Laboratory deleted!',
+          });
         })
-    },
-
-    async list(req, res) {
-
-        const page = req.params.page;
-
-        const obj = {
-            name: req.body.name,
-            mail: req.body.mail,
-            organizationId: req.body.organizationId,
-            status: req.body.status,
-            personId: req.body.personId,
-        }
-
-        const Op = Sequelize.Op;
-        var whereClause = new Object();
-
-        if (obj.name) {
-            whereClause.name = {
-                [Op.like]: '%' + obj.name + '%'
-            }
-        }
-
-        if (obj.organizationId) {
-            whereClause.organizationId = obj.organizationId
-        }
-
-        console.log(obj)
-        console.log("console log aqui", process.env.PER_PAGE)
-
-        User.findAndCountAll({
-            where: whereClause,
-            /* include: [
-                { association: 'profile' },
-                { association: 'organization' },
-            ], */
-            limit: parseInt(process.env.PER_PAGE),
-            offset: (page - 1) * parseInt(process.env.PER_PAGE),
-            order: [
-                ['id', 'DESC']
-            ]
-        }).then(user => {
-            let response = {
-                timestamp: Date.now(),
-                ok: true,
-                info: {
-                    totalRows: user.count,
-                    totalPages: Math.ceil(user.count / parseInt(process.env.PER_PAGE)),
-                    page: page
-                },
-                elements: user.rows
-            }
-
-            return res.status(200).json(response);
-
-        }).catch(err => {
-
-            console.log(err);
-            return res.status(400).json({
-                timestamp: Date.now(),
-                ok: false,
-                message: "Failed to list user!"
-            });
+        .catch(err => {
+          console.log(err);
+          return res.status(400).json({
+            timestamp: Date.now(),
+            ok: false,
+            message: 'Fail to delete laboratory!',
+          });
         });
+    }
+  },
 
-    },
+  /*  */
+  /*  */
+  /*  */
 
-    async delete(req, res) {
-        const { userId } = req.params;
+  // Adicionar info
+  async infoStore(req, res) {
+    const obj = {
+      userId: {},
+      idInfo: req.body.idInfo,
+      nomeInfo: req.body.nomeInfo,
+    };
 
-        // Verifica se o user existe
-        let user = await User.findByPk(
-            userId
-        );
+    // Id do usuário
+    if (req.body.userId) {
+      obj.userId = req.body.userId;
+    }
 
-        if (!user) {
-            return res.status(400).json({
-                timestamp: Date.now(),
-                ok: false,
-                message: "User not found!"
-            });
-        }
+    const errorDetails = await ValidatorInfo.info(obj);
+    if (errorDetails != 0) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        error: 'Malformed object.',
+        fields: errorDetails,
+      });
+    }
 
-        // Deleta o user
-        User.destroy({ where: { id: userId } })
-            .then((result) => {
+    // Verifica se o User existe
+    const register = await User.findAll({
+      limit: 1,
+      where: {
+        id: obj.userId,
+      },
+    });
+    if (register.length == 0) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        error: "User doesn't exist",
+        fields: [obj.userId],
+      });
+    }
 
-                console.log(result);
+    let info = await infosPropriedade.create(obj);
+    if (!info) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        ok: false,
+        message: 'Failed to create info',
+      });
+    } else {
+      return res.status(200).json({
+        timestamp: Date.now(),
+        ok: true,
+        message: 'Info created!',
+        payment: obj,
+      });
+    }
+  },
 
-                return res.status(400).json({
-                    timestamp: Date.now(),
-                    ok: false,
-                    message: "User deleted!"
-                });
+  // Deletar info
+  async infoDelete(req, res) {
+    const { infoId } = req.params;
 
-            }).catch((err) => {
-
-                console.log(err);
-
-                return res.status(400).json({
-                    timestamp: Date.now(),
-                    ok: false,
-                    message: "Failed to delete user!"
-                });
-            });
-    },
-
-    async login(req, res) {
-        const obj = {
-            mail: req.body.mail,
-            password: req.body.password
-        }
-        User.findOne({ where: obj })
-            .then(user => {
-                console.log(user);
-                if (!user) {
-                    return res.status(200).send({
-                        ok: false,
-                        message: 'Usuário não cadastrado com o login informado'
-                    });
-                }
-                console.log("teste", user)
-                var _user = {
-                    id: user.id,
-                    name: user.name,
-                    mail: user.mail,
-                    organizationId: user.organizationId,
-                };
-                console.log("user", _user)
-                var token = jwt.sign(_user, process.env.SECRETTOKEN, {
-                    expiresIn: eval(process.env.TIMEOUT)
-                });
-                console.log(token)
-                return res.status(200).send({
-                    ok: true,
-                    message: 'Usuário autenticado com sucesso',
-                    token: token,
-                    id: user.id,
-                    name: user.name,
-                })
-            })
-            .catch(err => {
-                console.log(err.message)
-                return res.status(400).send({
-                    timestamp: Date.now(),
-                    ok: false,
-                    message: "Failed to find user"
-                });
-            }
-            )
-
-    },
+    let info = await infosPropriedade.findByPk(infoId);
+    if (!info) {
+      return res.status(400).json({
+        timestamp: Date.now(),
+        ok: false,
+        message: 'Info not found!',
+      });
+    } else {
+      infosPropriedade
+        .destroy({ where: { id: infoId } })
+        .then(result => {
+          return res.status(200).json({
+            timestamp: Date.now(),
+            ok: true,
+            message: 'Info deleted!',
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          return res.status(400).json({
+            timestamp: Date.now(),
+            ok: false,
+            message: 'Fail to delete info!',
+          });
+        });
+    }
+  },
 };

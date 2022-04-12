@@ -1,7 +1,7 @@
 {
-    "name": "template-node",
+    "name": "testBackEndAgrotis",
     "version": "1.0.0",
-    "description": "TESS Backend",
+    "description": "test BackEnd Agrotis",
     "main": "src/server.js",
     "license": "MIT",
     "nodemonConfig": {

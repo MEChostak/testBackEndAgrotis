@@ -3,27 +3,25 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Plan', {
+    return queryInterface.createTable('InfosPropriedade', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
-        primaryKey: true
+        primaryKey: true,
       },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      description: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      price: {
-        type: Sequelize.NUMERIC,
-        allowNull: false
-      },
-      timeCourse: {
+      userId: {
         type: Sequelize.INTEGER,
+        allowNull:false,
+        onDelete: 'CASCADE',
+        hooks: true
+      },
+      idInfo: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      nomeInfo: {
+        type: Sequelize.STRING,
         allowNull: false
       },
       createdAt: {
@@ -39,6 +37,6 @@ module.exports = {
     })
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Plan');
+    return queryInterface.dropTable('InfosPropriedade');
   }
 };

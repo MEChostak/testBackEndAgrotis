@@ -7,41 +7,41 @@ module.exports = {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
-        primaryKey: true  
+        primaryKey: true,
       },
-      organizationId: {
-        type: Sequelize.INTEGER,
+      nome: {
+        type: Sequelize.STRING,
         allowNull: false,
       },
-      personId: {
-        type: Sequelize.INTEGER,
+      dataInicial: {
+        type: Sequelize.STRING,
         allowNull: false,
       },
-      name: {
+      dataFinal: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
-      password: {
+      cnpj: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
-      mail: {
+      observacoes: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW
+        defaultValue: Sequelize.NOW,
       },
       updatedAt: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW
-      }
-    })
+        defaultValue: Sequelize.NOW,
+      },
+    });
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('User');
-  }
+  },
 };

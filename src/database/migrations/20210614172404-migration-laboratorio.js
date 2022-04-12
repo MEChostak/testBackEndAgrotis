@@ -2,30 +2,24 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Person', {
+    return queryInterface.createTable('Laboratorio', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
-        primaryKey: true
+        primaryKey: true,
       },
-      name: {
-        type: Sequelize.STRING,
+      userId: {
+        type: Sequelize.INTEGER,
+        allowNull:false,
+        onDelete: 'CASCADE',
+        hooks: true
+      },
+      idLab: {
+        type: Sequelize.INTEGER,
         allowNull: false
       },
-      description: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      birthDate: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      phone: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      email: {
+      nomeLab: {
         type: Sequelize.STRING,
         allowNull: false
       },
@@ -42,6 +36,6 @@ module.exports = {
     })
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Person');
+    return queryInterface.dropTable('Laboratorio');
   }
 };

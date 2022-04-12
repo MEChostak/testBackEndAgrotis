@@ -4,9 +4,11 @@ class User extends Model {
   static init(sequelize) {
     super.init(
       {
-        name: DataTypes.STRING,
-        password: DataTypes.STRING,
-        mail: DataTypes.STRING,
+        nome: DataTypes.STRING,
+        dataInicial: DataTypes.STRING,
+        dataFinal: DataTypes.STRING,
+        cnpj: DataTypes.STRING,
+        observacoes: DataTypes.STRING,
       },
       {
         sequelize,
@@ -15,11 +17,13 @@ class User extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.Person, {
-      foreignKey: 'personId', as: 'person'
+    this.hasMany(models.Laboratorio, {
+      foreignKey: 'userId',
+      as: 'laboratorio',
     });
-    this.belongsTo(models.Organization, {
-      foreignKey: 'organizationId', as: 'organization'
+    this.hasMany(models.InfosPropriedade, {
+      foreignKey: 'userId',
+      as: 'infosPropriedade',
     });
   }
 }
